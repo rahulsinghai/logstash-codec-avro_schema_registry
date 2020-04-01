@@ -1,3 +1,7 @@
+## 1.2.1
+ - Add decorate_events to decorate events
+ - Add support for Avro's IntDate to Ruby's Date class conversion
+
 ## 1.2.0
  - Add base64_encoded for encode and change defaults
 

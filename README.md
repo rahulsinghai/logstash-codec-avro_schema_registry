@@ -1,6 +1,6 @@
 # Logstash Codec - Avro Schema Registry
 
-### v1.2.0
+### v1.2.1
 
 This plugin is used to serialize Logstash events as
 Avro datums, as well as deserializing Avro datums into
@@ -23,6 +23,8 @@ When this codec is used to decode the input, you may pass the following options:
 - ``username`` - optional.
 - ``password`` - optional.
 - ``tag_on_failure`` - tag events with ``_avroparsefailure`` when decode fails
+- ``decorate_events`` - will add Avro schema metadata to the event.
+
 
 If the input stream is binary encoded, you should use the ``ByteArrayDeserializer``
 in the Kafka input config.
@@ -63,6 +65,7 @@ input {
     ...
     codec => avro_schema_registry {
       endpoint => "http://schemas.example.com"
+      decorate_events => true
     }
     value_deserializer_class => "org.apache.kafka.common.serialization.ByteArrayDeserializer"
   }

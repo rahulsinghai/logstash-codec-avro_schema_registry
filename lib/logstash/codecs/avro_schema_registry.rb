@@ -1,5 +1,7 @@
 # encoding: utf-8
 require "avro"
+require "avro-patches"
+require "avro_patches/logical_types/decode_date_as_time_patch"
 require "open-uri"
 require "schema_registry"
 require "schema_registry/client"
@@ -30,6 +32,7 @@ MAGIC_BYTE = 0
 # - ``username`` - optional.
 # - ``password`` - optional.
 # - ``tag_on_failure`` - tag events with ``_avroparsefailure`` when decode fails
+# - ``decorate_events`` - will add avro schema metadata to the event.
 #
 # If the input stream is binary encoded, you should use the ``ByteArrayDeserializer``
 # in the Kafka input config.
@@ -112,7 +115,7 @@ MAGIC_BYTE = 0
 
 class LogStash::Codecs::AvroSchemaRegistry < LogStash::Codecs::Base
   config_name "avro_schema_registry"
-  
+
   EXCLUDE_ALWAYS = [ "@timestamp", "@version" ]
 
   # schema registry endpoint and credentials
@@ -129,6 +132,7 @@ class LogStash::Codecs::AvroSchemaRegistry < LogStash::Codecs::Base
   config :register_schema, :validate => :boolean, :default => false
   config :binary_encoded, :validate => :boolean, :default => false
   config :base64_encoded, :validate => :boolean, :default => false
+  config :decorate_events, :validate => :boolean, :default => false
 
   # tag events with `_avroparsefailure` when decode fails
   config :tag_on_failure, :validate => :boolean, :default => false
@@ -137,7 +141,7 @@ class LogStash::Codecs::AvroSchemaRegistry < LogStash::Codecs::Base
   config :client_key, :validate => :string, :default => nil
   config :ca_certificate, :validate => :string, :default => nil
   config :verify_mode, :validate => :string, :default => 'verify_peer'
-  
+
   public
   def register
     @client = if client_certificate != nil
@@ -230,7 +234,11 @@ class LogStash::Codecs::AvroSchemaRegistry < LogStash::Codecs::Base
         schema = get_schema(schema_id)
         decoder = Avro::IO::BinaryDecoder.new(datum)
         datum_reader = Avro::IO::DatumReader.new(schema)
-        yield LogStash::Event.new(datum_reader.read(decoder))
+        event = LogStash::Event.new(datum_reader.read(decoder))
+        if @decorate_events
+          decorate_event(event, schema, schema_id)
+        end
+        yield event
       end
     end
   rescue => e
@@ -258,6 +266,16 @@ class LogStash::Codecs::AvroSchemaRegistry < LogStash::Codecs::Base
        @on_event.call(event, Base64.strict_encode64(buffer.string))
     else
        @on_event.call(event, buffer.string)
+    end
+  end
+
+  private
+  def decorate_event(event, schema, schema_id)
+    event.set("[@metadata][avro][schema_id]", schema_id)
+    event.set("[@metadata][avro][type]", schema.type)
+    if schema.is_a?(Avro::Schema::NamedSchema)
+      event.set("[@metadata][avro][name]", schema.name)
+      event.set("[@metadata][avro][namespace]", schema.namespace)
     end
   end
 end
