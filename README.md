@@ -105,3 +105,39 @@ output {
   }
 }
 ```
+
+
+## Building the plug-in
+
+- Install JRuby
+- Set environment variables: `JRUBY_HOME` and `PATH=%JRUBY_HOME%\bin;%PATH%`
+- Build the plug-in:
+   
+   ```bash
+   gem install bundler
+   bundle install
+   bundle exec rspec
+   gem build logstash-codec-avro_schema_registry.gemspec
+   ```
+
+- Publish the plug-in to Github
+
+   ```bash
+   echo ":github: Bearer GH_TOKEN" >> C:\users\rahul\.gem\credentials
+   gem push --key github --host https://rubygems.pkg.github.com/rahulsinghai logstash-codec-avro_schema_registry-1.2.1.gem
+   ```
+
+- Install the plug-in
+
+   ```bash
+   .\bin\logstash-plugin install logstash-codec-avro_schema_registry-1.2.1.gem
+   ```
+
+- Prepare offline pack:
+
+   ```bash
+   .\bin\logstash-plugin update
+   .\bin\logstash-plugin prepare-offline-pack --output logstash-codec-avro_schema_registry-1.2.1.zip --overwrite logstash-codec-avro_schema_registry
+   ```
+
+- Release a new version in Github and upload the `.gem` & `.zip` files.
