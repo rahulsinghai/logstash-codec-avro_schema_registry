@@ -1,3 +1,6 @@
+## 1.2.2
+ - Corrected timestamp calculation for Avro Date logical type
+
 ## 1.2.1
  - Add decorate_events to decorate events
  - Add support for Avro's IntDate to Ruby's Date class conversion

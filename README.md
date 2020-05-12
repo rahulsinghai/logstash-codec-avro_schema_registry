@@ -1,6 +1,6 @@
 # Logstash Codec - Avro Schema Registry
 
-### v1.2.1
+### v1.2.2
 
 This plugin is used to serialize Logstash events as
 Avro datums, as well as deserializing Avro datums into
@@ -124,20 +124,20 @@ output {
 
    ```bash
    echo ":github: Bearer GH_TOKEN" >> C:\users\rahul\.gem\credentials
-   gem push --key github --host https://rubygems.pkg.github.com/rahulsinghai logstash-codec-avro_schema_registry-1.2.1.gem
+   gem push --key github --host https://rubygems.pkg.github.com/rahulsinghai logstash-codec-avro_schema_registry-1.2.2.gem
    ```
 
 - Install the plug-in
 
    ```bash
-   .\bin\logstash-plugin install logstash-codec-avro_schema_registry-1.2.1.gem
+   .\bin\logstash-plugin install logstash-codec-avro_schema_registry-1.2.2.gem
    ```
 
 - Prepare offline pack:
 
    ```bash
    .\bin\logstash-plugin update
-   .\bin\logstash-plugin prepare-offline-pack --output logstash-codec-avro_schema_registry-1.2.1.zip --overwrite logstash-codec-avro_schema_registry
+   .\bin\logstash-plugin prepare-offline-pack --output logstash-codec-avro_schema_registry-1.2.2.zip --overwrite logstash-codec-avro_schema_registry
    ```
 
 - Release a new version in Github and upload the `.gem` & `.zip` files.

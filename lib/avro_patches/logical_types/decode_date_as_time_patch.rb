@@ -6,9 +6,9 @@
 # Time (which is used by the timestamp-micros and timestamp-millis
 # logical types), so we convert the Date object to Time here.
 Avro::LogicalTypes::IntDate.class_eval do
-  EPOCH_START = Date.new(1970, 1, 1)
+  EPOCH = Time.utc(1970,"jan",1,0,0,0)
 
-  def self.decode(int)
-    (EPOCH_START + int).to_time.utc
+  def self.decode(daysSinceEpoch)
+    EPOCH + (daysSinceEpoch * (24 * 60 * 60))
   end
 end
